@@ -4,77 +4,142 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import it.jaschke.alexandria.api.Callback;
+import it.jaschke.alexandria.fragments.About;
+import it.jaschke.alexandria.fragments.AddBook;
+import it.jaschke.alexandria.fragments.BookDetail;
+import it.jaschke.alexandria.fragments.ListOfBooks;
 
-
-public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, Callback {
-
+/**
+ * Main Activity Class.
+ */
+public class MainActivity extends AppCompatActivity implements Callback, NavigationView.OnNavigationItemSelectedListener {
     /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     * Butter Knife binding.
      */
-    private NavigationDrawerFragment navigationDrawerFragment;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @Bind(R.id.nav_view) NavigationView navigationView;
 
     /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     * Action Bar Drawer.
+     */
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    /**
+     * Used to store the last screen title.
      */
     private CharSequence title;
     public static boolean IS_TABLET = false;
     private BroadcastReceiver messageReciever;
 
+    /**
+     * Constants
+     */
     public static final String MESSAGE_EVENT = "MESSAGE_EVENT";
     public static final String MESSAGE_KEY = "MESSAGE_EXTRA";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IS_TABLET = isTablet();
-        if(IS_TABLET){
-            setContentView(R.layout.activity_main_tablet);
-        }else {
-            setContentView(R.layout.activity_main);
-        }
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        initToggleActionBar();
+        title = getTitle();
+        setScreen(savedInstanceState);
 
         messageReciever = new MessageReciever();
         IntentFilter filter = new IntentFilter(MESSAGE_EVENT);
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever,filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever, filter);
+    }
 
-        navigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        title = getTitle();
+    private void setScreen(Bundle savedInstanceState) {
+        if(savedInstanceState == null) {
+            SharedPreferences sharedPrefs =
+                    PreferenceManager.getDefaultSharedPreferences(this);
+            String screen = sharedPrefs.getString(getString(R.string.pref_startScreen_key),
+                    getString(R.string.pref_startScreen_default));
 
-        // Set up the drawer.
-        navigationDrawerFragment.setUp(R.id.navigation_drawer,
-                    (DrawerLayout) findViewById(R.id.drawer_layout));
+            Fragment nextFragment;
+            if (screen.equals(0 + ""))
+                nextFragment = new ListOfBooks();
+            else
+                nextFragment = new AddBook();
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, nextFragment)
+                    .addToBackStack((String) title)
+                    .commit();
+        }
+    }
+
+    private void initToggleActionBar() {
+        this.setSupportActionBar(toolbar);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
+                public void onDrawerClosed(View view) {
+                    super.onDrawerClosed(view);
+                }
+
+                /** Called when a drawer has settled in a completely open state. */
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
+                }
+            };
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+            mDrawerToggle.syncState();
+
+            navigationView.setNavigationItemSelectedListener(this);
+        }
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        menuItem.setChecked(true);
+                        mDrawerLayout.closeDrawers();
+                        return true;
+                    }
+                });
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment nextFragment;
 
-        switch (position){
+        int item = menuItem.getItemId();
+        switch (item){
             default:
-            case 0:
+            case R.id.nav_books:
                 nextFragment = new ListOfBooks();
                 break;
-            case 1:
+            case R.id.nav_scan:
                 nextFragment = new AddBook();
                 break;
-            case 2:
+            case R.id.nav_about:
                 nextFragment = new About();
                 break;
 
@@ -84,30 +149,16 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 .replace(R.id.container, nextFragment)
                 .addToBackStack((String) title)
                 .commit();
-    }
 
-    public void setTitle(int titleId) {
-        title = getString(titleId);
-    }
+        menuItem.setChecked(true);
+        mDrawerLayout.closeDrawers();
+        return true;
 
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(title);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!navigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
-        }
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -116,11 +167,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -141,9 +191,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         fragment.setArguments(args);
 
         int id = R.id.container;
-        if(findViewById(R.id.right_container) != null){
-            id = R.id.right_container;
-        }
         getSupportFragmentManager().beginTransaction()
                 .replace(id, fragment)
                 .addToBackStack("Book Detail")
@@ -164,12 +211,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         getSupportFragmentManager().popBackStack();
     }
 
-    private boolean isTablet() {
-        return (getApplicationContext().getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-    }
-
     @Override
     public void onBackPressed() {
         if(getSupportFragmentManager().getBackStackEntryCount()<2){
@@ -178,5 +219,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         super.onBackPressed();
     }
 
+    // Make sure this is the method with just `Bundle` as the signature
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+    }
 
 }

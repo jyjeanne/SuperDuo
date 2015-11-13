@@ -1,4 +1,4 @@
-package it.jaschke.alexandria;
+package it.jaschke.alexandria.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import it.jaschke.alexandria.R;
+
 /**
- * About FRagment
+ * About Fragment
  */
 public class About extends Fragment {
 
