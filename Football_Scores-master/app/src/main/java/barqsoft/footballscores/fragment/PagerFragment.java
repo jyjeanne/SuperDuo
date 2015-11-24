@@ -1,4 +1,4 @@
-package barqsoft.footballscores;
+package barqsoft.footballscores.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,8 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import barqsoft.footballscores.MainActivity;
+import barqsoft.footballscores.R;
 
 /**
  * Created by yehya khaled on 2/27/2015.
@@ -30,10 +34,19 @@ public class PagerFragment extends Fragment
         View rootView = inflater.inflate(R.layout.pager_fragment, container, false);
         mPagerHandler = (ViewPager) rootView.findViewById(R.id.pager);
         mPagerAdapter = new myPageAdapter(getChildFragmentManager());
+
+        SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+        String dateInString = "2015-8-16";
+        Date test = new Date(System.currentTimeMillis());
+        try {
+            test = mformat.parse(dateInString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         for (int i = 0;i < NUM_PAGES;i++)
         {
-            Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
-            SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+            Date fragmentdate = new Date(test.getTime()+((i-2)*86400000));
             viewFragments[i] = new MainScreenFragment();
             viewFragments[i].setFragmentDate(mformat.format(fragmentdate));
         }
@@ -78,7 +91,7 @@ public class PagerFragment extends Fragment
             } else if ( julianDay == currentJulianDay +1 ) {
                 return context.getString(R.string.tomorrow);
             }
-             else if ( julianDay == currentJulianDay -1)
+            else if ( julianDay == currentJulianDay -1)
             {
                 return context.getString(R.string.yesterday);
             }

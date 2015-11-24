@@ -1,4 +1,4 @@
-package barqsoft.footballscores;
+package barqsoft.footballscores.fragment;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,7 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import barqsoft.footballscores.MainActivity;
+import barqsoft.footballscores.R;
+import barqsoft.footballscores.ViewHolder;
+import barqsoft.footballscores.database.DatabaseContract;
+import barqsoft.footballscores.database.ScoresAdapter;
 import barqsoft.footballscores.service.myFetchService;
 
 /**
@@ -20,7 +26,8 @@ import barqsoft.footballscores.service.myFetchService;
  */
 public class MainScreenFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
-    public scoresAdapter mAdapter;
+    TextView txtNoResult;
+    public ScoresAdapter mAdapter;
     public static final int SCORES_LOADER = 0;
     private String[] fragmentdate = new String[1];
     private int last_selected_item = -1;
@@ -44,15 +51,14 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         update_scores();
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         final ListView score_list = (ListView) rootView.findViewById(R.id.scores_list);
-        mAdapter = new scoresAdapter(getActivity(),null,0);
+        txtNoResult = (TextView) rootView.findViewById(R.id.text_no_result);
+        mAdapter = new ScoresAdapter(getActivity(),null,0);
         score_list.setAdapter(mAdapter);
         getLoaderManager().initLoader(SCORES_LOADER,null,this);
         mAdapter.detail_match_id = MainActivity.selected_match_id;
-        score_list.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
+        score_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ViewHolder selected = (ViewHolder) view.getTag();
                 mAdapter.detail_match_id = selected.match_id;
                 MainActivity.selected_match_id = (int) selected.match_id;
@@ -82,15 +88,19 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         }
         */
 
-        int i = 0;
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast())
-        {
-            i++;
-            cursor.moveToNext();
+        if(cursor.getCount()==0)
+            txtNoResult.setVisibility(View.VISIBLE);
+        else {
+            txtNoResult.setVisibility(View.GONE);
+            int i = 0;
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                i++;
+                cursor.moveToNext();
+            }
+            //Log.v(FetchScoreTask.LOG_TAG,"Loader query: " + String.valueOf(i));
+            mAdapter.swapCursor(cursor);
         }
-        //Log.v(FetchScoreTask.LOG_TAG,"Loader query: " + String.valueOf(i));
-        mAdapter.swapCursor(cursor);
         //mAdapter.notifyDataSetChanged();
     }
 
@@ -99,6 +109,5 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     {
         mAdapter.swapCursor(null);
     }
-
 
 }

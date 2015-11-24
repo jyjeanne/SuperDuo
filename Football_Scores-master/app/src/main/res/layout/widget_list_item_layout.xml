@@ -3,7 +3,8 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:elevation="4dp"
-    android:background="@drawable/list_item"
+    android:id="@+id/base_item"
+    android:background="@drawable/container_rounded_bg"
     >
     <LinearLayout
         android:orientation="horizontal" android:layout_width="match_parent"
@@ -14,22 +15,20 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/home_crest"
-                android:contentDescription="@string/home_crest_content_desc"/>
+            android:orientation="vertical"
+            android:gravity="center">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textSize="@dimen/TeamNames"
                 android:gravity="center"
+                android:textColor="@color/white"
                 android:text="@string/test_text"
                 android:id="@+id/home_name"
-                android:contentDescription="@string/home_name_content_desc"/>
+                android:contentDescription="@string/home_name_content_desc"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:fontFamily="sans-serif-light"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
@@ -43,7 +42,9 @@
                 android:text="@string/test_text"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:textSize="@dimen/Score"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/white"
                 android:id="@+id/score_textview"
                 android:contentDescription="@string/score_content_desc"/>
             <TextView
@@ -51,6 +52,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="@string/test_text"
+                android:textColor="@color/white"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:id="@+id/data_textview"
@@ -61,22 +63,20 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/away_crest"
-                android:contentDescription="@string/away_crest_content_desc"/>
+            android:orientation="vertical"
+            android:gravity="center">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/test_text"
+                android:textColor="@color/white"
                 android:textSize="@dimen/TeamNames"
                 android:id="@+id/away_name"
-                android:contentDescription="@string/away_name_content_desc"/>
+                android:contentDescription="@string/away_name_content_desc"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:fontFamily="sans-serif-light"/>
         </LinearLayout>
     </LinearLayout>
     <FrameLayout

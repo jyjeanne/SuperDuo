@@ -5,10 +5,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Created by yehya khaled on 2/26/2015.
+ * Created by Jeremy on 23/11/2015.
  */
-public class ViewHolder
-{
+public class ViewHolder {
     public TextView home_name;
     public TextView away_name;
     public TextView score;
