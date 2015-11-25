@@ -9,7 +9,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import barqsoft.footballscores.R;
-import barqsoft.footballscores.Utilies;
+import barqsoft.footballscores.Utility;
 import barqsoft.footballscores.database.DatabaseContract;
 
 /**
@@ -78,7 +78,7 @@ public class ScoreWidgetService extends RemoteViewsService {
                 awayName = data.getString(INDEX_AWAY_COL);
                 time = data.getString(INDEX_TIME_COL);
                 try {
-                    score = Utilies.getScores(data.getInt(INDEX_HOME_GOALS_COL), data.getInt(INDEX_AWAY_GOALS_COL));
+                    score = Utility.getScores(data.getInt(INDEX_HOME_GOALS_COL), data.getInt(INDEX_AWAY_GOALS_COL));
                 }catch (IllegalStateException e){
                     score = "-";
                 }
