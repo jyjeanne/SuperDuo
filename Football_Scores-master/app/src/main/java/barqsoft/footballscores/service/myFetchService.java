@@ -68,7 +68,7 @@ public class myFetchService extends IntentService {
             URL fetch = new URL(fetch_build.toString());
             m_connection = (HttpURLConnection) fetch.openConnection();
             m_connection.setRequestMethod("GET");
-            m_connection.addRequestProperty("X-Auth-Token", "ed16251b0e044ce3a72e4c1a2b822709");
+            m_connection.addRequestProperty("X-Auth-Token", "e136b7858d424b9da07c88f28b61989a");
 
 
             m_connection.connect();
