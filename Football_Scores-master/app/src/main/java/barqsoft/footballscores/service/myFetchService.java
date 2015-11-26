@@ -225,7 +225,7 @@ public class myFetchService extends IntentService {
                     match_values.put(DatabaseContract.scores_table.AWAY_GOALS_COL, Away_goals);
                     match_values.put(DatabaseContract.scores_table.LEAGUE_COL, League);
                     match_values.put(DatabaseContract.scores_table.MATCH_DAY, match_day);
-                    
+
                     values.add(match_values);
                 }
             }
