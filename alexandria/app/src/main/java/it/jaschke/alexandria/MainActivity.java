@@ -211,13 +211,6 @@ public class MainActivity extends AppCompatActivity implements Callback, Navigat
         getSupportFragmentManager().popBackStack();
     }
 
-    @Override
-    public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount()<2){
-            finish();
-        }
-        super.onBackPressed();
-    }
 
     // Make sure this is the method with just `Bundle` as the signature
     @Override
